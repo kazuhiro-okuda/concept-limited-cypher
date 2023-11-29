@@ -7,7 +7,7 @@ class RoulettePage extends StatefulWidget {
   _RoulettePageState createState() => _RoulettePageState();
 }
 
-class _RoulettePageState extends State<RoulettePage> {
+class _RoulettePageState extends State<RoulettePage> with SingleTickerProviderStateMixin {
   List<String> itemHistory = [];
   List<String> allItems = ["膝を使う","スレッドを入れる","チェアーで終わる","ヘッドを使う","ジョーダンで終わる","2段階以上のフリーズ","トップロックだけ","フットワークだけ"];
   String selectedItem = '';
@@ -30,11 +30,35 @@ class _RoulettePageState extends State<RoulettePage> {
     });
   }
 
+  late AnimationController _animationController;
+  late ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();  // ここで初期化
+    _animationController = AnimationController(vsync: this, duration: Duration(seconds: 3));
+    _animationController.addListener(() {
+      _scrollController.jumpTo(_animationController.value * 500); // 500はスクロールの範囲を調整
+    });
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   void _spinRoulette() {
     setState(() {
       final random = Random();
       int index = random.nextInt(allItems.length);
       selectedItem = allItems[index];
+
+      _animationController.reset();
+      _animationController.forward();
+      // アニメーション終了後の処理を追加する場合はここに記述
     });
   }
 
@@ -81,12 +105,10 @@ class _RoulettePageState extends State<RoulettePage> {
 
           Expanded(
             child: ListView.builder(
+              controller: _scrollController,
               itemCount: allItems.length,
               itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(allItems[index]),
-                  // Add buttons for edit and delete
-                );
+                return ListTile(title: Text(allItems[index]));
               },
             ),
           ),
