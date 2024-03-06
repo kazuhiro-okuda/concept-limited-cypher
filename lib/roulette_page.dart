@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 import 'add_roulette_item_page.dart';
+import 'login_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; // Firestore を使用するためのパッケージ
 
 class RoulettePage extends StatefulWidget {
   @override
@@ -9,27 +11,9 @@ class RoulettePage extends StatefulWidget {
 
 class _RoulettePageState extends State<RoulettePage> with SingleTickerProviderStateMixin {
   List<String> itemHistory = [];
-  List<String> allItems = ["膝を使う","スレッドを入れる","チェアーで終わる","ヘッドを使う","ジョーダンで終わる","2段階以上のフリーズ","トップロックだけ","フットワークだけ"];
+  List<String> allItems = []; // Firestore から取得したデータを格納するリスト
+  // List<String> allItems = ["膝を使う","スレッドを入れる","チェアーで終わる","ヘッドを使う","ジョーダンで終わる","2段階以上のフリーズ","トップロックだけ","フットワークだけ"];
   String selectedItem = '';
-
-  void _addItem(String item) {
-    setState(() {
-      allItems.add(item);
-    });
-  }
-
-  void _editItem(int index, String newItem) {
-    setState(() {
-      allItems[index] = newItem;
-    });
-  }
-
-  void _deleteItem(int index) {
-    setState(() {
-      allItems.removeAt(index);
-    });
-  }
-
   late AnimationController _animationController;
   late ScrollController _scrollController;
 
@@ -40,6 +24,19 @@ class _RoulettePageState extends State<RoulettePage> with SingleTickerProviderSt
     _animationController = AnimationController(vsync: this, duration: Duration(seconds: 3));
     _animationController.addListener(() {
       _scrollController.jumpTo(_animationController.value * 500); // 500はスクロールの範囲を調整
+    });
+    _getAllItemsFromFirestore(); // Firestore からデータを取得
+  }
+
+  void _getAllItemsFromFirestore() {
+    FirebaseFirestore.instance.collection('roulette_items').get().then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        setState(() {
+          allItems.add(doc['title']); // Firestore のフィールド名に合わせて修正
+        });
+      });
+    }).catchError((error) {
+      print('データの取得に失敗しました: $error');
     });
   }
 
@@ -55,7 +52,6 @@ class _RoulettePageState extends State<RoulettePage> with SingleTickerProviderSt
       final random = Random();
       int index = random.nextInt(allItems.length);
       selectedItem = allItems[index];
-
       _animationController.reset();
       _animationController.forward();
       // アニメーション終了後の処理を追加する場合はここに記述
@@ -108,7 +104,15 @@ class _RoulettePageState extends State<RoulettePage> with SingleTickerProviderSt
               controller: _scrollController,
               itemCount: allItems.length,
               itemBuilder: (context, index) {
-                return ListTile(title: Text(allItems[index]));
+                return ListTile(
+                  // title: Text(allItems[index])
+                  title: Center( // This centers the ListTile's content
+                    child: Align( // This aligns the text to the left within the centered content
+                      alignment: Alignment.centerLeft,
+                      child: Text(allItems[index]),
+                    ),
+                  ),
+                );
               },
             ),
           ),
@@ -127,8 +131,25 @@ class _RoulettePageState extends State<RoulettePage> with SingleTickerProviderSt
             ),
           ),
           SizedBox(height: 20.0), // ここで下に16ピクセルのスペースを作ります
+
+          ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => LoginPage()),
+              );
+            },
+            child: Text('ログインはこちらから'),
+            style: ElevatedButton.styleFrom(
+              primary: Color(0xFF212121),
+            ),
+          ),
+          SizedBox(height: 20.0), // ここで下に16ピクセルのスペースを作ります
+
         ],
       ),
     );
   }
 }
+
+

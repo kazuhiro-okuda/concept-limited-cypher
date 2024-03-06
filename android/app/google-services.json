@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "514470355860",
+    "firebase_url": "https://sokka-2f2c6.firebaseio.com",
+    "project_id": "sokka-2f2c6",
+    "storage_bucket": "sokka-2f2c6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:514470355860:android:a36b59af7b415901402581",
+        "android_client_info": {
+          "package_name": "com.sokka_tech.my_first_application"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "514470355860-n52614379e2qesbqpngpau9aq1pikou5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBg-MpH4N075Gbc0w18L5eL6hyJS1AV9vA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "514470355860-n52614379e2qesbqpngpau9aq1pikou5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
