@@ -36,13 +36,16 @@ class LoginPage extends StatelessWidget {
                     email: emailController.text,
                     password: passwordController.text,
                   );
-                  // ログイン成功時の処理
-                } on FirebaseAuthException catch (e) {
-                  if (e.code == 'user-not-found') {
-                    print('No user found for that email.');
-                  } else if (e.code == 'wrong-password') {
-                    print('Wrong password provided for that user.');
-                  }
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('ログインしました')),
+                  );
+                  Navigator.popUntil(context, (route) => route.isFirst);
+                } on FirebaseAuthException {
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('メールアドレスまたはパスワードが正しくありません')),
+                  );
                 }
               },
               child: Text('ログイン'),
